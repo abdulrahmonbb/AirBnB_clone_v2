@@ -1,31 +1,51 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
-This script distributes an archive to the web servers.
+This script distributes the archive on the web servers.
 """
-from fabric.api import env, run, put
+from fabric.api import *
 from os.path import exists
 
+# Web servers IP addresses
 env.hosts = ['100.25.171.73', '54.210.174.198']
+
 
 def do_deploy(archive_path):
     """
-    Uploads and uncompresses the archive on the web servers.
+    Uploads and Uncompresses the web static archive on the
+    web servers.
     """
     if exists(archive_path) is False:
+        # returns false if file at archive path does not exist.
         return False
+
+    # remove absolute path before the filename
+    filename = archive_path.split('/')[-1]
+
+    # folder to uncompress archive
+    no_extension = '/data/web_static/releases/' + '{}'.format(filename.split('.')[0])
+
+    tmp = '/tmp/' + filename
+
     try:
-        file_name = archive_path.split('/')[-1]
-        no_extention = file_name.split('.')[0]
-        path = '/data/web_static/releases/'
+        # upload archive to /tmp/ directory of the web server
         put(archive_path, '/tmp/')
-        run('mkdir -p {}{}'.format(path, no_extension))
-        run('tar -xzvf /tmp/{} -C {}{}/'.format(file_name, path, no_extension))
-        run('rm -r /tmp/{}'.format(file_name))
-        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_extension))
-        run('rm -rf {}{}/web_static'.format(path, no_extension))
-        run('rm -rf /data/web_static/current')
-        run('ln -s {}{}/ /data/web_static/current'.format(path, no_extension))
-        return True
-    except:
-        return False
+
+        # create the folder to uncompress the archive
+        run('mkdir -p {}'.format(no_extension))
         
+        # uncompress the archive into the folder
+        run('tar -xzvf {} -C {}'.format(tmp, no_extension))
+        
+        # deleting the archive from the web server
+        run('rm {}'.format(tmp))
+        run('mv {}/web_static/* {}/'.format(no_extension, no_extension))
+        run('rm -rf {}/web_static/'.format(no_extension))
+        
+        # delete the symbolic link /data/web_static/current from the web server
+        run('rm -rf /data/web_static/current')
+
+        # create a new the symbolic link /data/web_static/current on the web server
+        run('ln -s {}/ /data/web_static/current'.format(no_extension))
+        return True
+    except Exception as e:
+        return False
