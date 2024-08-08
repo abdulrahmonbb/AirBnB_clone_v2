@@ -34,7 +34,7 @@ def do_deploy(archive_path):
         run('mkdir -p {}'.format(no_ext))
 
         # Uncompress the archive to the created folder
-        run('tar -xzvf {} -C {}'.format(tmp, no_ext))
+        run('tar -xzf {} -C {}'.format(tmp, no_ext))
 
         # Delete the archive from the web server
         run('rm {}'.format(tmp))
