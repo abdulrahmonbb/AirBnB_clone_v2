@@ -10,6 +10,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+from models.config import storage_type
 
 
 class HBNBCommand(cmd.Cmd):
@@ -115,9 +116,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        print("this is the args ==", args)
         args_list = args.split(' ')
-        print(args_list)
 
         if not args:
             print("** class name missing **")
@@ -232,10 +231,18 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            if storage_type == 'db':
+                objects = storage.all(HBNBCommand.classes[args])
+            else:
+                objects = storage._FileStorage__objects
+            for k, v in objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
+            if storage_type == 'db':
+                objects = storage.all()
+            else:
+                objects = storage._FileStorage__objects
             for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
