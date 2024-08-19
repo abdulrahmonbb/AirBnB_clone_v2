@@ -2,6 +2,7 @@
 """ Console Module """
 import cmd
 import sys
+from os import getenv
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -10,7 +11,8 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from models.config import storage_type
+
+storage_type = getenv("HBNB_TYPE_STORAGE")
 
 
 class HBNBCommand(cmd.Cmd):
