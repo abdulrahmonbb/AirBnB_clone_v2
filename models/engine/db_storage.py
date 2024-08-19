@@ -25,7 +25,10 @@ class DBStorage:
         db = os.getenv('HBNB_MYSQL_DB')
         env = os.getenv('HBNB_ENV')
 
-        self.__engine = create_engine(f'mysql+mysqldb://{user}:{password}@{host}/{db}', pool_pre_ping=True)
+        self.__engine = create_engine(
+            f'mysql+mysqldb://{user}:{password}@{host}/{db}',
+            pool_pre_ping=True
+        )
 
         if env == 'test':
             Base.metadata.drop_all(self.__engine)
@@ -57,10 +60,11 @@ class DBStorage:
     def reload(self):
         """Create all tables in the database and initialize a new session"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(
+            bind=self.__engine, expire_on_commit=False
+            )
         self.__session = scoped_session(session_factory)
 
     def close(self):
         """Closes the current session."""
         self.__session.remove()
-	
