@@ -2,6 +2,7 @@
 """Starts a Flask web application."""
 
 from flask import Flask, render_template
+from models import *
 from models import storage
 from models.state import State
 
@@ -9,12 +10,12 @@ app = Flask(__name__)
 
 
 @app.teardown_appcontext
-def close_db(error):
+def teardown_db(exception):
     """Remove the current SQLalchemy Session after each request."""
     storage.close()
 
 
-@app.route('/cities_by_states', strict_slashes=False)
+@app.route('/states_list', strict_slashes=False)
 def states_list():
     """Display a HTML page with a list of all state objects."""
     states = storage.all(State).values()
