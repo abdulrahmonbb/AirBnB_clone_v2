@@ -10,9 +10,10 @@ storage_type = getenv("HBNB_TYPE_STORAGE")
 
 
 class State(BaseModel, Base):
-    """ State class """
+    """State class"""
+
     __tablename__ = "states"
-    if storage_type == 'db':
+    if storage_type == "db":
         name = Column(String(128), nullable=False)
         cities = relationship("City", backref="state", cascade="all, delete")
     else:
@@ -20,8 +21,13 @@ class State(BaseModel, Base):
 
         @property
         def cities(self):
-            """Getter attribute cities that returns the list of City instances with state_id equals to the current State.id"""
+            """
+            Getter attribute cities that returns the list of City
+            instances with state_id equals to the
+            current State.id
+            """
             from models import storage
+
             city_list = []
             for city in storage.all(City).values():
                 if city.state_id == self.id:
