@@ -17,26 +17,21 @@ def teardown_db(exception):
     storage.close()
 
 
-@app.route("/states", strict_slashes=False)
-def states():
-    """
-    Displays a HTML page with all state objects.
-    """
-    states = storage.all(State).values()
-    return render_template("9-states.html", states=states)
-
-
+@app.route("/states", defaults={"id": 1}, strict_slashes=False)
 @app.route("/states/<id>", strict_slashes=False)
-def states_id(id):
+def states_by_id(id):
     """
     Displays a HTML page with a state object.
     """
     states = storage.all(State).values()
-    for state in states:
-        if state.id == id:
-            return render_template("9-states.html", state=state)
-    return render_template("9-states.html")
+    if id == 1:
+        return render_template("9-states.html", states=states)
+    else:
+        for state in states:
+            if state.id == id:
+                return render_template("9-states.html", state=state)
+        return render_template("9-states.html")
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000")
+    app.run(host='0.0.0.0', port=5000)
